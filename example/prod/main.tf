@@ -19,6 +19,6 @@ resource "azurerm_resource_group" "rg" {
   name     = "rg-terraformdemo-${var.environment}-${var.location}"
   location = var.location
   tags = {
-    "CostCenter" = "it"
+    "CostCenter" = "ops"
   }
 }

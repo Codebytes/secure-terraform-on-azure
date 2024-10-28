@@ -1,55 +1,66 @@
----
 checks:
-- code: rg-naming-pattern
-  description: Custom check to check resource group naming
-  impact: resource groups should be named consistently
-  resolution: use the pattern rg-app-env-region
-  requiredTypes:
-  - resource
-  requiredLabels:
-  - azurerm_resource_group
-  severity: HIGH
-  matchSpec:
-    name: name
-    action: regexMatches
-    value: "^rg-[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+"
-  errorMessage: improperly named resource group
-  relatedLinks:
-  - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
-- code: tags-resources
-  description: Custom check to ensure the CostCenter tag is applied to Azure Resources
-  impact: By not having CostCenter we can't keep track of billing
-  resolution: Add the CostCenter tag
-  requiredTypes:
-  - resource
-  requiredLabels:
-  - azurerm_subscription
-  - azurerm_resource_group
-  - azurerm_linux_web_app
-  - azurerm_windows_web_app
-  - azurerm_storage_account
-  - azurerm_service_plan
-  - azurerm_app_service
-  severity: HIGH
-  matchSpec:
-    name: tags
-    action: contains
-    value: CostCenter
-  errorMessage: The required CostCenter tag was missing
-  relatedLinks:
-  - https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging
-- code: app-service-deprecated
-  description: Custom check to warn on deprecated app service
-  impact: using deprecated app service resource instead of azurerm_linux_web_app or azurerm_windows_web_app
-  resolution: Use azurerm_linux_web_app or azurerm_windows_web_app
-  requiredTypes:
-  - resource
-  requiredLabels:
-  - azurerm_app_service
-  severity: HIGH
-  matchSpec:
-    name: azurerm_app_service
-    action: isPresent
-  errorMessage: Using a deprecated resource - azurerm_app_service
-  relatedLinks:
-  - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service
+  - {
+      code: rg-naming-pattern,
+      description: "Custom check to check resource group naming",
+      impact: "resource groups should be named consistently",
+      resolution: "use the pattern rg-app-env-region",
+      requiredTypes: [resource],
+      requiredLabels: [azurerm_resource_group],
+      severity: HIGH,
+      matchSpec:
+        {
+          action: not,
+          predicateMatchSpec:
+            [
+              {
+                name: name,
+                action: regexMatches,
+                value: "^rg-[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+",
+              },
+            ],
+        },
+      errorMessage: "improperly named resource group",
+      relatedLinks:
+        [
+          "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming",
+        ],
+    }
+  - {
+      code: tags-resources,
+      description: "Custom check to ensure the CostCenter tag is applied to Azure Resources",
+      impact: "By not having CostCenter we can't keep track of billing",
+      resolution: "Add the CostCenter tag",
+      requiredTypes: [resource],
+      requiredLabels:
+        [
+          azurerm_subscription,
+          azurerm_resource_group,
+          azurerm_linux_web_app,
+          azurerm_windows_web_app,
+          azurerm_storage_account,
+          azurerm_service_plan,
+          azurerm_app_service,
+        ],
+      severity: HIGH,
+      matchSpec: { name: tags, action: contains, value: CostCenter },
+      errorMessage: "The required CostCenter tag was missing",
+      relatedLinks:
+        [
+          "https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-tagging",
+        ],
+    }
+  - {
+      code: app-service-deprecated,
+      description: "Custom check to warn on deprecated app service",
+      impact: "using deprecated app service resource instead of azurerm_linux_web_app or azurerm_windows_web_app",
+      resolution: "Use azurerm_linux_web_app or azurerm_windows_web_app",
+      requiredTypes: [resource],
+      requiredLabels: [azurerm_app_service],
+      severity: HIGH,
+      matchSpec: { name: azurerm_app_service, action: isPresent },
+      errorMessage: "Using a deprecated resource - azurerm_app_service",
+      relatedLinks:
+        [
+          "https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service",
+        ],
+    }
